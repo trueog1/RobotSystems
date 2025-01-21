@@ -1,6 +1,6 @@
-from .picarx_improved import Picarx
+import picarx_improved 
 
-px = Picarx()
+px = picarx_improved.Picarx()
 running = True
 
 while running == True:
