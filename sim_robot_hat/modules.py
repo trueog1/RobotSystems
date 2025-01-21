@@ -18,13 +18,13 @@ class Ultrasonic():
 
         self.timeout = timeout
 
-        trig.close()
+        #trig.close()
         echo.close()
         self.trig = Pin(trig._pin_num)
         self.echo = Pin(echo._pin_num, mode=Pin.IN, pull=Pin.PULL_DOWN)
 
     def _read(self):
-        self.trig.off()
+        '''self.trig.off()
         time.sleep(0.001)
         self.trig.on()
         time.sleep(0.00001)
@@ -47,14 +47,16 @@ class Ultrasonic():
 
         during = pulse_end - pulse_start
         cm = round(during * self.SOUND_SPEED / 2 * 100, 2)
-        return cm
+        return cm'''
+        return 0
 
     def read(self, times=10):
-        for i in range(times):
+        '''for i in range(times):
             a = self._read()
             if a != -1:
                 return a
-        return -1
+        return -1'''
+        return 0
 
 class ADXL345(I2C):
     """ADXL345 modules"""
@@ -91,13 +93,14 @@ class ADXL345(I2C):
         :return: value of the axis, or list of all axis
         :rtype: float/list
         """
-        if axis is None:
+        '''if axis is None:
             return [self._read(i) for i in range(3)]
         else:
-            return self._read(axis)
+            return self._read(axis)'''
+        return 0
 
     def _read(self, axis: int) -> float:
-        raw_2 = 0
+        '''raw_2 = 0
         result = super().read()
         data = (0x08 << 8) + self._REG_POWER_CTL
         if result:
@@ -117,7 +120,8 @@ class ADXL345(I2C):
             raw_2 = raw[1]
         g = raw_2 << 8 | raw[0]
         value = g / 256.0
-        return value
+        return value'''
+        return 0
 
 
 class RGB_LED():
@@ -306,11 +310,12 @@ class Grayscale_Module(object):
         :return: list of line status, 0 for white, 1 for black
         :rtype: list
         """
-        if self._reference == None:
+        '''if self._reference == None:
             raise ValueError("Reference value is not set")
         if datas == None:
             datas = self.read()
-        return [0 if data > self._reference[i] else 1 for i, data in enumerate(datas)]
+        return [0 if data > self._reference[i] else 1 for i, data in enumerate(datas)]'''
+        return [0] 
 
     def read(self, channel: int = None) -> list:
         """
@@ -321,7 +326,8 @@ class Grayscale_Module(object):
         :return: list of grayscale data
         :rtype: list
         """
-        if channel == None:
+        '''if channel == None:
             return [self.pins[i].read() for i in range(3)]
         else:
-            return self.pins[channel].read()
+            return self.pins[channel].read()'''
+        return [0] * 3

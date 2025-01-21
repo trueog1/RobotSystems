@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-from sim_robot_hat.basic import _Basic_class
-#import gpiozero  # https://gpiozero.readthedocs.io/en/latest/installing.html
-#from gpiozero import OutputDevice, InputDevice, Button
-
-
+import os
+#from ..sim_robot_hat.basic import _Basic_class
+'''
 class Pin(_Basic_class):
     """Pin manipulation class"""
 
@@ -87,12 +84,11 @@ class Pin(_Basic_class):
         # setup
         self._value = 0
         self.gpio = None
-        #self.setup(mode, pull)
+        self.setup(mode, pull)
         self._info("Pin init finished.")
 
     def close(self):
-        #self.gpio.close()
-        pass
+        self.gpio.close()
 
     def deinit(self):
         self.gpio.close()
@@ -120,19 +116,18 @@ class Pin(_Basic_class):
             raise ValueError(
                 f'pull param error, should be None, Pin.PULL_NONE, Pin.PULL_DOWN, Pin.PULL_UP'
             )
-        # #
+        #
         if self.gpio != None:
             if self.gpio.pin != None:
                 self.gpio.close()
-        # #
-        #if mode in [None, self.OUT]:
-            #self.gpio = OutputDevice(self._pin_num)
-        #else:
-            #if pull in [self.PULL_UP]:
-                #self.gpio = InputDevice(self._pin_num, pull_up=True)
-            #else:
-                #self.gpio = InputDevice(self._pin_num, pull_up=False)
-        self.gpio = None
+        #
+        if mode in [None, self.OUT]:
+            self.gpio = OutputDevice(self._pin_num)
+        else:
+            if pull in [self.PULL_UP]:
+                self.gpio = InputDevice(self._pin_num, pull_up=True)
+            else:
+                self.gpio = InputDevice(self._pin_num, pull_up=False)
 
     def dict(self, _dict=None):
         """
@@ -214,8 +209,7 @@ class Pin(_Basic_class):
         :return: pin value(1)
         :rtype: int
         """
-        #return self.on()
-        return 1
+        return self.on()
 
     def low(self):
         """
@@ -224,8 +218,7 @@ class Pin(_Basic_class):
         :return: pin value(0)
         :rtype: int
         """
-        #return self.off()
-        return 0
+        return self.off()
 
     def irq(self, handler, trigger, bouncetime=200, pull=None):
         """
@@ -291,8 +284,6 @@ class Pin(_Basic_class):
         if released_handler is not None:
             self.gpio.when_released = released_handler
 
-        pass
-
     def name(self):
         """
         Get the pin name
@@ -300,4 +291,4 @@ class Pin(_Basic_class):
         :return: pin name
         :rtype: str
         """
-        return f"GPIO{self._pin_num}"
+        return f"GPIO{self._pin_num}" '''

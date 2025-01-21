@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from .basic import _Basic_class
 from .utils import is_installed, run_command
-from .music import Music
+#from .music import Music
 from distutils.spawn import find_executable
 
 

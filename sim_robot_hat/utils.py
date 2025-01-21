@@ -109,13 +109,14 @@ def reset_mcu():
     transfer loop, and Raspberry Pi getting IOError while
     Reading ADC, manipulating PWM, etc.
     """
-    mcu_reset = Pin("MCURST")
+    '''mcu_reset = Pin("MCURST")
     mcu_reset.off()
     time.sleep(0.01)
     mcu_reset.on()
     time.sleep(0.01)
 
-    mcu_reset.close()
+    mcu_reset.close()'''
+    pass
 
 
 def get_battery_voltage():
