@@ -196,7 +196,7 @@ class Picarx(object):
         self.set_motor_speed(1, speed)
         self.set_motor_speed(2, speed)
 
-    @log_on_end(logging.DEBUG, "Message when function ends successfully")
+    #@log_on_end(logging.DEBUG, "Message when function ends successfully")
     def backward(self, speed):
         current_angle = self.dir_current_angle
 
@@ -225,7 +225,7 @@ class Picarx(object):
             self.set_motor_speed(1, -1*speed)
             self.set_motor_speed(2, speed)  
 
-    @log_on_end(logging.DEBUG, "Message when function ends successfully")
+    #@log_on_end(logging.DEBUG, "Message when function ends successfully")
     def forward(self, speed):
         current_angle = self.dir_current_angle
 
@@ -253,7 +253,7 @@ class Picarx(object):
             self.set_motor_speed(1, speed)
             self.set_motor_speed(2, -1*speed)                  
 
-    @log_on_end(logging.DEBUG, "Message when function ends successfully")
+    #@log_on_end(logging.DEBUG, "Message when function ends successfully")
     def stop(self):
         '''
         Execute twice to make sure it stops
@@ -296,7 +296,7 @@ class Picarx(object):
         else:
             raise ValueError("grayscale reference must be a 1*3 list")
 
-    @log_on_end(logging.DEBUG, "Message when function ends successfully")
+    #@log_on_end(logging.DEBUG, "Message when function ends successfully")
     def reset(self):
         self.stop()
         self.set_dir_servo_angle(0)
