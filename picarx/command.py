@@ -1,4 +1,4 @@
-from picarx.picarx_improved import Picarx
+from .picarx_improved import Picarx
 
 px = Picarx()
 running = True
