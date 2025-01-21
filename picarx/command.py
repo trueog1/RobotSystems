@@ -4,14 +4,14 @@ px = Picarx()
 running = True
 
 while running == True:
-    value = input("Enter manuver type:")
+    value = input("Enter maneuver type:")
 
     if value == "a":  #forward and backward
-        speed = input("Enter spped value:")
+        speed = input("Enter speed value:")
         speed = int(speed)
-        angle = input("Enter angle value:")
+        angle = input("Enter angle value (degrees):")
         speed = int(speed)
-        time = input("Enter time of travel:")
+        time = input("Enter time of travel (seconds):")
         time = int(time)
 
         func = px.forward_and_backward(speed, angle, time)

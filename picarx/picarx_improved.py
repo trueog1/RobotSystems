@@ -303,14 +303,14 @@ class Picarx(object):
         self.set_cam_tilt_angle(0)
         self.set_cam_pan_angle(0)
 
-    def forward_and_backward(speed, angle, time):
+    def forward_and_backward(self, speed, angle, t):
         px = Picarx()
         px.set_dir_servo_angle(angle)
         px.forward(speed)
-        time.sleep(time)
+        time.sleep(t)
         px.stop()
         px.backward(speed)
-        time.sleep(time)
+        time.sleep(t)
         px.stop()
 
     def parallel_park():
