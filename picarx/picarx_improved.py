@@ -308,7 +308,6 @@ class Picarx(object):
         self.forward(speed)
         time.sleep(t)
         self.stop()
-        self.reset()
         self.backward(speed)
         time.sleep(t)
         self.stop()
@@ -325,11 +324,12 @@ class Picarx(object):
             self.stop()
             self.set_dir_servo_angle(-45)
             self.backward(10)
-            time.sleep(3)
+            time.sleep(2)
             self.set_dir_servo_angle(45)
             self.backward(10)
-            time.sleep(3)
+            time.sleep(2)
             self.stop()
+            self.reset()
 
         if direction == "right":
             self.set_dir_servo_angle(45)
@@ -341,11 +341,12 @@ class Picarx(object):
             self.stop()
             self.set_dir_servo_angle(45)
             self.backward(10)
-            time.sleep(3)
+            time.sleep(2)
             self.set_dir_servo_angle(-45)
             self.backward(10)
-            time.sleep(3)
+            time.sleep(2)
             self.stop()
+            self.reset()
 
         self.stop()
 
