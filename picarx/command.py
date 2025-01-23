@@ -14,13 +14,17 @@ while running == True:
         time = input("Enter time of travel (seconds):")
         time = int(time)
 
-        func = px.forward_and_backward(speed, angle, time)
+        px.forward_and_backward(speed, angle, time)
 
     if value == "b": #parallel parking
-        px.parallel_park()
+        direction = input("Enter side to park (left or right):")
+
+        px.parallel_park(direction)
 
     if value == "c": #k turn
-        px.parallel_park()
+        direction = input("Enter side to turn (left or right):")
+
+        px.k_turn(direction)
 
     if value == "d": #exit
         running = False

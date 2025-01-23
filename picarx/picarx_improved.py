@@ -304,24 +304,79 @@ class Picarx(object):
         self.set_cam_pan_angle(0)
 
     def forward_and_backward(self, speed, angle, t):
-        px = Picarx()
-        px.set_dir_servo_angle(angle)
-        px.forward(speed)
+        self.set_dir_servo_angle(int(angle))
+        self.forward(speed)
         time.sleep(t)
-        px.stop()
-        px.backward(speed)
+        self.stop()
+        self.backward(speed)
         time.sleep(t)
-        px.stop()
+        self.stop()
 
-    def parallel_park():
-        px.stop()
+    def parallel_park(self, direction):
+        if direction == "left":
+            self.set_dir_servo_angle(-45)
+            self.forward(10)
+            time.sleep(2)
+            self.set_dir_servo_angle(45)
+            self.forward(10)
+            time.sleep(2)
+            self.stop()
+            self.set_dir_servo_angle(-45)
+            self.backward(10)
+            time.sleep(3)
+            self.set_dir_servo_angle(45)
+            self.backward(10)
+            time.sleep(3)
+            self.stop()
 
-    def k_turn():
-        px.stop()
+        if direction == "right":
+            self.set_dir_servo_angle(45)
+            self.forward(10)
+            time.sleep(2)
+            self.set_dir_servo_angle(-45)
+            self.forward(10)
+            time.sleep(2)
+            self.stop()
+            self.set_dir_servo_angle(45)
+            self.backward(10)
+            time.sleep(3)
+            self.set_dir_servo_angle(-45)
+            self.backward(10)
+            time.sleep(3)
+            self.stop()
+
+        self.stop()
+
+    def k_turn(self, direction):
+        if direction == "left":
+            self.set_dir_servo_angle(-70)
+            self.forward(10)
+            time.sleep(5)
+            self.set_dir_servo_angle(70)
+            self.backward(10)
+            time.sleep(5)
+            self.set_dir_servo_angle(0)
+            self.forward(10)
+            time.sleep(8)
+            self.stop()
+
+        if direction == "right":
+            self.set_dir_servo_angle(70)
+            self.forward(10)
+            time.sleep(5)
+            self.set_dir_servo_angle(-70)
+            self.backward(10)
+            time.sleep(5)
+            self.set_dir_servo_angle(0)
+            self.forward(10)
+            time.sleep(8)
+            self.stop()
+        
+        self.stop()
 
 if __name__ == "__main__":
     px = Picarx()
     px.forward(50)
-    px.set_dir_servo_angle(20)
+    #px.set_dir_servo_angle(20)
     time.sleep(1)
     px.stop()
