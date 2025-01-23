@@ -308,9 +308,11 @@ class Picarx(object):
         self.forward(speed)
         time.sleep(t)
         self.stop()
+        self.reset()
         self.backward(speed)
         time.sleep(t)
         self.stop()
+        self.reset()
 
     def parallel_park(self, direction):
         if direction == "left":
