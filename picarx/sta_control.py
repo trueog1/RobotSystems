@@ -1,7 +1,7 @@
 from picarx_improved import Picarx
 import time
 #import logging
-from vilib import Vilib
+#from vilib import Vilib
 import numpy as np
 
 '''logging_format = "%(asctime)s: %(message)s"
@@ -12,19 +12,19 @@ class Sense(object):
     def __init__(self, camera = False):
         self.px = Picarx()
         self.reference = np.array(self.px.grayscale._reference)
-        if camera == True:
+        '''if camera == True:
             Vilib.camera_start()
             time.sleep(0.5)
             self.path = "picarx"
             self.image_name = "image"
-            self.px.set_cam_tilt_angle(-25)
+            self.px.set_cam_tilt_angle(-25)'''
 
     def read_stat(self):
         return self.px.grayscale.read() 
 
-    def take_photo(self):
+    '''def take_photo(self):
         Vilib.take_photo(photo_name = self.image_name, path = self.path)  
-        time.sleep(0.5) 
+        time.sleep(0.5)''' 
 
 class Interp(object):
     def __init__(self, sensitivity = [0, 3600], polarity = False):
@@ -32,13 +32,13 @@ class Interp(object):
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
 
-    def locating_line_g(self, gs):
+    def locating_line_g(self, gs_v):
         if self.polarity == True:
-            gs = [gs - min(gs) for gs in gs]
+            gs_v = [gs - min(gs_v) for gs in gs_v]
         else:
-            gs = [abs(gs - max(gs)) for gs in gs]
+            gs_v = [abs(gs - max(gs_v)) for gs in gs_v]
 
-        left, middle, right = gs
+        left, middle, right = gs_v
 
         if right >= left:
             self.robot_position = (middle - right)/max(right, middle)
@@ -68,7 +68,7 @@ class Interp(object):
                
 
 class Control(object):
-    def __init__(self, threshold, kp, ki):
+    def __init__(self, threshold, kp = 30.0, ki = 0.0):
         self.px = Picarx()
         self.threshold = threshold
         self.kp = kp
@@ -89,14 +89,15 @@ if __name__ == "__main__":
     
     while running == True:
         value = input("Enter line following type ('a': greyscale 'b': camera 'c': quit):")
-        threshold = int(input("Enter threshold value:"))
+        threshold = input("Enter threshold value:")
+        threshold = float(threshold)
         polarity = input("Enter 'False' if line is darker than floor and 'True' if line is lighter than floor:")
 
         if value == 'a':
             sense = Sense()
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
-            think.locating_line_g(sense.get_grayscale())
+            think.locating_line_g(sense.read_stat())
             robot_position = think.robot_position()
             act.auto_steering(sense.px, robot_position)
 
