@@ -15,6 +15,7 @@ class Sense(object):
         self.reference = np.array(self.px.grayscale._reference)
         if camera == True:
             Vilib.camera_start()
+            Vilib.display()
             time.sleep(0.5)
             self.path = "picarx"
             self.image_name = "image"
