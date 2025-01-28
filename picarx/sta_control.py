@@ -63,7 +63,7 @@ class Interp(object):
     def line_locating_c(self):
         ...
 
-    def robot_position(self):
+    def robot_location(self):
         return self.robot_position
                
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
             think.locating_line_g(sense.read_stat())
-            robot_position = think.robot_position()
+            robot_position = think.robot_location()
             act.auto_steering(sense.px, robot_position)
 
         if value == 'b':
