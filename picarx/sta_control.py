@@ -97,7 +97,8 @@ if __name__ == "__main__":
             sense = Sense()
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
-            sense.px.forward(20)
+            time.sleep(2)
+            sense.px.forward(5)
             while True:
                 think.locating_line_g(sense.read_stat())
                 robot_position = think.robot_location()
