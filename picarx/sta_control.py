@@ -99,7 +99,7 @@ if __name__ == "__main__":
             act = Control(threshold= threshold)
             think.locating_line_g(sense.read_stat())
             robot_position = think.robot_location()
-            act.auto_steering(sense.px, robot_position)
+            act.auto_steering(robot_position, sense.px)
 
         if value == 'b':
             sense = Sense(camera = True)
