@@ -11,7 +11,7 @@ logging.getLogger().setLevel(logging.DEBUG)'''
 class Sense(object):
     def __init__(self, px, camera = False):
         #self.px = Picarx()
-        self.reference = np.array(self.px.grayscale._reference)
+        self.reference = np.array(px.grayscale._reference)
         '''if camera == True:
             Vilib.camera_start()
             time.sleep(0.5)
