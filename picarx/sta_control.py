@@ -69,7 +69,7 @@ class Interp(object):
 
 class Control(object):
     def __init__(self, threshold, kp = 30.0, ki = 0.0):
-        self.px = Picarx()
+        #self.px = Picarx()
         self.threshold = threshold
         self.kp = kp
         self.ki = ki
