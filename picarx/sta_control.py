@@ -97,9 +97,11 @@ if __name__ == "__main__":
             sense = Sense()
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
-            think.locating_line_g(sense.read_stat())
-            robot_position = think.robot_location()
-            act.auto_steering(robot_position, sense.px)
+            sense.px.forward(20)
+            while True:
+                think.locating_line_g(sense.read_stat())
+                robot_position = think.robot_location()
+                act.auto_steering(robot_position, sense.px)
 
         if value == 'b':
             sense = Sense(camera = True)
