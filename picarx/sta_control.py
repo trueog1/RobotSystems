@@ -1,8 +1,9 @@
 from picarx_improved import Picarx
 import time
 #import logging
-#from vilib import Vilib
+from vilib import Vilib
 import numpy as np
+import cv2 
 
 '''logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:%S")
@@ -12,25 +13,29 @@ class Sense(object):
     def __init__(self, camera = False):
         self.px = Picarx()
         self.reference = np.array(self.px.grayscale._reference)
-        '''if camera == True:
+        if camera == True:
             Vilib.camera_start()
             time.sleep(0.5)
             self.path = "picarx"
             self.image_name = "image"
-            self.px.set_cam_tilt_angle(-25)'''
+            self.px.set_cam_tilt_angle(-25)
 
     def read_stat(self):
         return self.px.grayscale.read() 
 
-    '''def take_photo(self):
+    def take_photo(self):
         Vilib.take_photo(photo_name = self.image_name, path = self.path)  
-        time.sleep(0.5)''' 
+        time.sleep(0.5) 
 
 class Interp(object):
     def __init__(self, sensitivity = [0, 3600], polarity = False):
         self.polarity = polarity
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
+        self.img_threshold = 75
+        self.color = 255
+        self.img_start = 350
+        self.img_cutoff = 450
 
     def locating_line_g(self, gs_v):
         if self.polarity == True:
@@ -60,8 +65,26 @@ class Interp(object):
                 self.robot_position = self.robot_position - 1
                 return
 
-    def line_locating_c(self):
-        ...
+    def line_locating_c(self, image_name, path):
+        img = cv2.imread(f'{path}/{image_name}.jpg')
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = img[self.img_start:self.img_cutoff, :]
+        img_height, img_width = img.shape
+        half_width = img_width / 2
+
+        if self.polarity == True:
+            _, thresh = cv2.threshold(img, self.img_threshold, self.color, cv2.THRESH_BINARY_INV)
+        
+        else:
+            _, thresh = cv2.threshold(img, self.img_threshold, self.color, cv2.THRESH_BINARY_INV)
+
+        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        M = cv2.moments(contours)
+
+        if M['m00'] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+            self.robot_position = (cX - half_width)/ half_width
 
     def robot_location(self):
         return self.robot_position
@@ -97,7 +120,7 @@ if __name__ == "__main__":
             sense = Sense()
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
-            time.sleep(2)
+            time.sleep(1)
             sense.px.forward(5)
             while True:
                 think.locating_line_g(sense.read_stat())
@@ -108,3 +131,9 @@ if __name__ == "__main__":
             sense = Sense(camera = True)
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
+            time.sleep(1)
+            sense.px.forward(2)
+            while True:
+                think.locating_line_c(sense.read_stat())
+                robot_position = think.robot_location()
+                act.auto_steering(robot_position, sense.px)
