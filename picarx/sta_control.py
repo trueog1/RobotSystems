@@ -32,7 +32,7 @@ class Interp(object):
         self.polarity = polarity
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
-        self.img_threshold = 75
+        self.img_threshold = 100
         self.color = 255
         self.img_start = 350
         self.img_cutoff = 450
@@ -79,7 +79,8 @@ class Interp(object):
             _, thresh = cv2.threshold(img, self.img_threshold, self.color, cv2.THRESH_BINARY_INV)
 
         contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        M = cv2.moments(contours)
+        big_c = max(contours, key=cv2.contourArea)
+        M = cv2.moments(big_c)
 
         if M['m00'] != 0:
             cX = int(M["m10"] / M["m00"])
@@ -134,6 +135,6 @@ if __name__ == "__main__":
             time.sleep(1)
             sense.px.forward(2)
             while True:
-                think.locating_line_c(sense.read_stat())
+                think.locating_line_c(sense.image_name, sense.path)
                 robot_position = think.robot_location()
                 act.auto_steering(robot_position, sense.px)
