@@ -63,7 +63,7 @@ class Interp(object):
     def line_locating_c(self):
         ...
 
-    def robot_position(self ):
+    def robot_position(self):
         return self.robot_position
                
 
