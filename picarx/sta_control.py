@@ -9,8 +9,8 @@ logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:
 logging.getLogger().setLevel(logging.DEBUG)'''
 
 class Sense(object):
-    def __init__(self, camera = False):
-        self.px = Picarx()
+    def __init__(self, px, camera = False):
+        #self.px = Picarx()
         self.reference = np.array(self.px.grayscale._reference)
         '''if camera == True:
             Vilib.camera_start()
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         polarity = input("Enter 'False' if line is darker than floor and 'True' if line is lighter than floor:")
 
         if value == 'a':
-            sense = Sense()
+            sense = Sense(px)
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
             think.locating_line_g(sense.read_stat())
