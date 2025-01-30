@@ -16,7 +16,7 @@ class Sense(object):
         if camera == True:
             Vilib.camera_start()
             #Vilib.display()
-            time.sleep(0.1)
+            time.sleep(0.5)
             self.path = "picarx"
             self.image_name = "image"
             self.px.set_cam_tilt_angle(-30)
@@ -26,7 +26,7 @@ class Sense(object):
 
     def take_photo(self):
         Vilib.take_photo(photo_name = self.image_name, path = self.path)  
-        time.sleep(0.5) 
+        time.sleep(0.1) 
 
 class Interp(object):
     def __init__(self, sensitivity = [0, 3600], polarity = False, t= 60):
@@ -36,7 +36,7 @@ class Interp(object):
         self.img_threshold = t
         self.color = 255
         self.img_start = 350
-        self.img_cutoff = 450
+        self.img_cutoff = 425
 
     def locating_line_g(self, gs_v):
         if self.polarity == True:
