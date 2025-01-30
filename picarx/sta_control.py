@@ -19,7 +19,7 @@ class Sense(object):
             time.sleep(0.5)
             self.path = "picarx"
             self.image_name = "image"
-            self.px.set_cam_tilt_angle(-25)
+            self.px.set_cam_tilt_angle(-30)
 
     def read_stat(self):
         return self.px.grayscale.read() 
@@ -33,7 +33,7 @@ class Interp(object):
         self.polarity = polarity
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
-        self.img_threshold = 50
+        self.img_threshold = 75
         self.color = 255
         self.img_start = 350
         self.img_cutoff = 450
@@ -74,10 +74,10 @@ class Interp(object):
         half_width = img_width / 2
 
         if self.polarity == True:
-            _, thresh = cv2.threshold(img, self.img_threshold, self.color, cv2.THRESH_BINARY_INV)
+            _, thresh = cv2.threshold(img, thresh = self.img_threshold, maxval = self.color, type = cv2.THRESH_BINARY_INV)
         
         else:
-            _, thresh = cv2.threshold(img, self.img_threshold, self.color, cv2.THRESH_BINARY_INV)
+            _, thresh = cv2.threshold(img, thresh = self.img_threshold, maxval =self.color, type = cv2.THRESH_BINARY_INV)
 
         contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         big_c = max(contours, key=cv2.contourArea)
