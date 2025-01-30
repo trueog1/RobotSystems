@@ -108,6 +108,16 @@ class Control(object):
             px.set_dir_servo_angle(self.angle)
             return self.angle
 
+class Bus(object):
+    def __init__(self):
+        self.message = None
+
+    def read(self, message):
+        ...
+
+    def write(self,):
+        ...
+
 if __name__ == "__main__":
     #px = Picarx()
     running = True
@@ -123,7 +133,7 @@ if __name__ == "__main__":
             think = Interp(polarity = polarity)
             act = Control(threshold= threshold)
             time.sleep(1)
-            sense.px.forward(55)
+            sense.px.forward(5)
             while True:
                 think.locating_line_g(sense.read_stat())
                 robot_position = think.robot_location()
