@@ -137,6 +137,6 @@ if __name__ == "__main__":
             sense.px.forward(2)
             while True:
                 sense.take_photo()
-                think.locating_line_c(sense.image_name, sense.path)
+                think.line_locating_c(sense.image_name, sense.path)
                 robot_position = think.robot_location()
                 act.auto_steering(robot_position, sense.px)
