@@ -29,11 +29,11 @@ class Sense(object):
         time.sleep(0.5) 
 
 class Interp(object):
-    def __init__(self, sensitivity = [0, 3600], polarity = False):
+    def __init__(self, sensitivity = [0, 3600], polarity = False, t= 60):
         self.polarity = polarity
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
-        self.img_threshold = 45
+        self.img_threshold = t
         self.color = 255
         self.img_start = 350
         self.img_cutoff = 450
@@ -130,8 +130,10 @@ if __name__ == "__main__":
                 act.auto_steering(robot_position, sense.px)
 
         if value == 'b':
+            img_t = input("Enter camera threshold value:")
+            img_t = float(img_t)
             sense = Sense(camera = True)
-            think = Interp(polarity = polarity)
+            think = Interp(polarity = polarity, t = img_t)
             act = Control(threshold= threshold)
             time.sleep(1)
             sense.px.forward(2)
