@@ -135,7 +135,7 @@ if __name__ == "__main__":
             sense = Sense(camera = True)
             think = Interp(polarity = polarity, t = img_t)
             act = Control(threshold= threshold)
-            time.sleep(0.2)
+            time.sleep(1)
             sense.px.forward(2)
             while True:
                 sense.take_photo()
