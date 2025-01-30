@@ -16,7 +16,7 @@ class Sense(object):
         if camera == True:
             Vilib.camera_start()
             Vilib.display()
-            time.sleep(0.5)
+            #time.sleep(0.5)
             self.path = "picarx"
             self.image_name = "image"
             self.px.set_cam_tilt_angle(-30)
@@ -135,8 +135,8 @@ if __name__ == "__main__":
             sense = Sense(camera = True)
             think = Interp(polarity = polarity, t = img_t)
             act = Control(threshold= threshold)
-            time.sleep(1)
-            sense.px.forward(2)
+            #time.sleep(1)
+            sense.px.forward(1)
             while True:
                 sense.take_photo()
                 print(f'photo')
