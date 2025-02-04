@@ -55,7 +55,7 @@ class Interp(object):
         #self.ic_bus = ic_bus
         self.c_delay = c_delay
 
-    def locating_line_g(self, gs_v, si_bus):
+    def locating_line_g(self, si_bus):
 
         while True:
             gs_v = si_bus.read()
