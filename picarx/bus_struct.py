@@ -5,6 +5,7 @@ from vilib import Vilib
 import numpy as np
 import cv2 
 import concurrent.futures
+import rwlock
 
 '''logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:%S")
@@ -71,11 +72,11 @@ class Interp(object):
                 if self.robot_position < 0:
                     self.robot_position = -1 * self.robot_position
                     time.sleep(self.s_delay)
-                    return
+                    continue
                 else:
                     self.robot_position = 1 - self.robot_position
                     time.sleep(self.s_delay)
-                    return
+                    continue
             
             elif left > right:
                 self.robot_position = (middle - left)/max(left, middle)
@@ -83,12 +84,12 @@ class Interp(object):
                 if self.robot_position < 0:
                     self.robot_position = self.robot_position
                     time.sleep(self.s_delay)
-                    return
+                    continue
 
                 else:
                     self.robot_position = self.robot_position - 1
                     time.sleep(self.s_delay)
-                    return
+                    continue
 
     def locating_line_c(self):
         while True:
@@ -139,18 +140,22 @@ class Control(object):
                 self.e = self.e + position
                 self.angle = (self.kp * position) + (self.ki * self.e)
                 px.set_dir_servo_angle(self.angle)
-                return self.angle
+                time.sleep(self.c_delay)
+                continue
 
 class Bus(object):
     def __init__(self):
         self.message = None
+        self.lock = rwlock.RWLockWrite()
 
     def read(self):
-        message = self.message
+        with self.lock.gen_rlock():
+            message = self.message
         return message
 
     def write(self, message):
-        self.message = message
+        with self.lock.gen_wlock():
+            self.message = message
 
 
 if __name__ == "__main__":
