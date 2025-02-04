@@ -55,7 +55,7 @@ class Interp(object):
         #self.ic_bus = ic_bus
         self.c_delay = c_delay
 
-    def locating_line_g(self, si_bus):
+    def locating_line_g(self, si_bus, ic_bus):
 
         while True:
             gs_v = si_bus.read()
@@ -69,31 +69,35 @@ class Interp(object):
             left, middle, right = gs_v
 
             if right >= left:
-                self.robot_position = (middle - right)/max(right, middle)
+                robot_position = (middle - right)/max(right, middle)
                 
-                if self.robot_position < 0:
-                    self.robot_position = -1 * self.robot_position
+                if robot_position < 0:
+                    robot_position = -1 * robot_position
                     time.sleep(self.s_delay)
                     continue
                 else:
-                    self.robot_position = 1 - self.robot_position
+                    robot_position = 1 - robot_position
                     time.sleep(self.s_delay)
                     continue
             
             elif left > right:
-                self.robot_position = (middle - left)/max(left, middle)
+                robot_position = (middle - left)/max(left, middle)
 
-                if self.robot_position < 0:
-                    self.robot_position = self.robot_position
+                if robot_position < 0:
+                    robot_position = robot_position
                     time.sleep(self.s_delay)
                     continue
 
                 else:
-                    self.robot_position = self.robot_position - 1
+                    robot_position = robot_position - 1
                     time.sleep(self.s_delay)
                     continue
 
-    def locating_line_c(self, si_bus):
+            ic_bus.write(self.robot_position)
+            print(f'Changed Position')
+            time.sleep(self.c_delay)
+
+    def locating_line_c(self, si_bus, ic_bus):
         while True:
             file_n = si_bus.read()
             img = cv2.imread(f'{file_n}.jpg')
@@ -115,12 +119,10 @@ class Interp(object):
             if M['m00'] != 0:
                 cX = int(M["m10"] / M["m00"])
                 #cY = int(M["m01"] / M["m00"])
-                self.robot_position = (cX - half_width)/ half_width
+                robot_position = (cX - half_width)/ half_width
                 time.sleep(self.s_delay)
 
-    def robot_location(self, ic_bus):
-        while True:
-            ic_bus.write(self.robot_position)
+            ic_bus.write(robot_position)
             print(f'Changed Position')
             time.sleep(self.c_delay)
                
@@ -188,10 +190,9 @@ if __name__ == "__main__":
                 think.locating_line_g(sense.read_gray_stat())
                 robot_position = think.robot_location()
                 act.auto_steering(robot_position, sense.px)'''
-            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
                 eSensor = executor.submit(sense.set_bus_grayscale, sense_interp_bus)
-                eInterpreter = executor.submit(think.locating_line_g, sense_interp_bus)
-                eRobot = executor.submit(think.robot_position, interp_control_bus)
+                eInterpreter = executor.submit(think.locating_line_g, sense_interp_bus, interp_control_bus)
                 eControl = executor.submit(act.auto_steering, interp_control_bus)
 
         if value == 'b':
@@ -209,8 +210,7 @@ if __name__ == "__main__":
                 robot_position = think.robot_location()
                 act.auto_steering(robot_position, sense.px)'''
 
-            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
                 eSensor = executor.submit(sense.take_photo, sense_interp_bus)
-                eInterpreter = executor.submit(think.locating_line_c, sense_interp_bus)
-                eRobot = executor.submit(think.robot_position, interp_control_bus)
+                eInterpreter = executor.submit(think.locating_line_c, sense_interp_bus, interp_control_bus)
                 eControl = executor.submit(act.auto_steering, interp_control_bus)
