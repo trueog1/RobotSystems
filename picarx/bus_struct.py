@@ -40,7 +40,7 @@ class Sense(object):
 
     def set_bus_grayscale(self, si_bus):
         while True:
-            si_bus.write(self.px.grayscale.read() - self.reference)
+            si_bus.write(np.array(self.px.grayscale.read()) - self.reference)
             #si_bus.write(self.read_gray_stat())
             print(f'Read grayscale value')
             time.sleep(self.s_delay)
@@ -62,46 +62,50 @@ class Interp(object):
     def locating_line_g(self, si_bus, ic_bus):
 
         while True:
-            #time.sleep(self.s_delay)
-            gs_v = si_bus.read()
-            time.sleep(self.s_delay)
-            print(f'Gray Transfer')
+            try:
+                gs_v = si_bus.read()
+                print(gs_v)
+                time.sleep(self.s_delay)
+                print(f'Gray Transfer')
 
-            if self.polarity == True:
-                gs_v = [gs - min(gs_v) for gs in gs_v]
-            else:
-                gs_v = [abs(gs - max(gs_v)) for gs in gs_v]
+                if self.polarity == True:
+                    gs_v = [gs - min(gs_v) for gs in gs_v]
+                else:
+                    gs_v = [abs(gs - max(gs_v)) for gs in gs_v]
 
-            left, middle, right = gs_v
+                left, middle, right = gs_v
 
-            if right >= left:
-                robot_position = (middle - right)/max(right, middle)
+                if right >= left:
+                    robot_position = (middle - right)/max(right, middle)
+                    
+                    if robot_position < 0:
+                        robot_position = -1 * robot_position
+                        time.sleep(self.s_delay)
+                        continue
+                    else:
+                        robot_position = 1 - robot_position
+                        time.sleep(self.s_delay)
+                        continue
                 
-                if robot_position < 0:
-                    robot_position = -1 * robot_position
-                    time.sleep(self.s_delay)
-                    continue
-                else:
-                    robot_position = 1 - robot_position
-                    time.sleep(self.s_delay)
-                    continue
-            
-            elif left > right:
-                robot_position = (middle - left)/max(left, middle)
+                elif left > right:
+                    robot_position = (middle - left)/max(left, middle)
 
-                if robot_position < 0:
-                    robot_position = robot_position
-                    time.sleep(self.s_delay)
-                    continue
+                    if robot_position < 0:
+                        robot_position = robot_position
+                        time.sleep(self.s_delay)
+                        continue
 
-                else:
-                    robot_position = robot_position - 1
-                    time.sleep(self.s_delay)
-                    continue
+                    else:
+                        robot_position = robot_position - 1
+                        time.sleep(self.s_delay)
+                        continue
 
-            ic_bus.write(self.robot_position)
-            print(f'Changed Position')
-            time.sleep(self.c_delay)
+                ic_bus.write(self.robot_position)
+                print(f'Changed Position')
+                time.sleep(self.c_delay)
+
+            except:
+                time.sleep(self.s_delay)
 
     def locating_line_c(self, si_bus, ic_bus):
         while True:
@@ -148,15 +152,19 @@ class Control(object):
 
     def auto_steering(self, px, ic_bus):
         while True:
-            position = ic_bus.read()
-            time.sleep(self.c_delay)
-            if abs(position) > self.threshold:
-                self.e = self.e + position
-                self.angle = (self.kp * position) + (self.ki * self.e)
-                px.set_dir_servo_angle(self.angle)
+            try:
+                position = ic_bus.read()
                 time.sleep(self.c_delay)
-                print(f'Move')
-                continue
+                if abs(position) > self.threshold:
+                    self.e = self.e + position
+                    self.angle = (self.kp * position) + (self.ki * self.e)
+                    px.set_dir_servo_angle(self.angle)
+                    time.sleep(self.c_delay)
+                    print(f'Move')
+                    continue
+
+            except:
+                time.sleep(self.c_delay)
 
 class Bus(object):
     def __init__(self):
