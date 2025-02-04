@@ -38,6 +38,7 @@ class Sense(object):
     def set_bus_grayscale(self, si_bus):
         while True:
             si_bus.write(self.read_gray_stat())
+            print(f'Red grayscale value')
             time.sleep(self.s_delay)
 
 class Interp(object):
@@ -119,6 +120,7 @@ class Interp(object):
     def robot_location(self, ic_bus):
         while True:
             ic_bus.write(self.robot_position)
+            print(f'Changed Position')
             time.sleep(self.c_delay)
                
 
@@ -141,6 +143,7 @@ class Control(object):
                 self.angle = (self.kp * position) + (self.ki * self.e)
                 px.set_dir_servo_angle(self.angle)
                 time.sleep(self.c_delay)
+                print(f'Move')
                 continue
 
 class Bus(object):
