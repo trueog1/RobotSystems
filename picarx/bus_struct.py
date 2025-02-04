@@ -1,7 +1,10 @@
 from picarx_improved import Picarx
 import time
 #import logging
-from vilib import Vilib
+try:
+    from vilib import Vilib
+except:
+    pass
 import numpy as np
 import cv2 
 import concurrent.futures
@@ -60,6 +63,7 @@ class Interp(object):
         while True:
             gs_v = si_bus.read()
             print(f'Gray Transfer')
+            time.sleep(self.s_delay)
 
             if self.polarity == True:
                 gs_v = [gs - min(gs_v) for gs in gs_v]
@@ -100,6 +104,7 @@ class Interp(object):
     def locating_line_c(self, si_bus, ic_bus):
         while True:
             file_n = si_bus.read()
+            time.sleep(self.s_delay)
             img = cv2.imread(f'{file_n}.jpg')
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = img[self.img_start:self.img_cutoff, :]
@@ -138,9 +143,10 @@ class Control(object):
         #self.ic_bus = ic_bus
         self.c_delay = c_delay
 
-    def auto_steering(self, position, px, ic_bus):
+    def auto_steering(self, px, ic_bus):
         while True:
             position = ic_bus.read()
+            time.sleep(self.c_delay)
             if abs(position) > self.threshold:
                 self.e = self.e + position
                 self.angle = (self.kp * position) + (self.ki * self.e)
@@ -162,6 +168,11 @@ class Bus(object):
     def write(self, message):
         with self.lock.gen_wlock():
             self.message = message
+
+def handle_exception(future):
+    exception = future.exception()
+    if exception:
+        print(f'Exception in worker thread: {exception}')
 
 
 if __name__ == "__main__":
@@ -192,8 +203,11 @@ if __name__ == "__main__":
                 act.auto_steering(robot_position, sense.px)'''
             with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
                 eSensor = executor.submit(sense.set_bus_grayscale, sense_interp_bus)
-                eInterpreter = executor.submit(think.locating_line_g, sense_interp_bus, interp_control_bus)
-                eControl = executor.submit(act.auto_steering, interp_control_bus)
+                eSensor.add_done_callback(handle_exception)
+                eInterp = executor.submit(think.locating_line_g, sense_interp_bus, interp_control_bus)
+                eInterp.add_done_callback(handle_exception)
+                eControl = executor.submit(act.auto_steering, sense.px, interp_control_bus)
+                eControl.add_done_callback(handle_exception)
 
         if value == 'b':
             img_t = input("Enter camera threshold value:")
