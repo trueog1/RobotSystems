@@ -5,7 +5,7 @@ from vilib import Vilib
 import numpy as np
 import cv2 
 import concurrent.futures
-import rwlock
+from readerwriterlock import rwlock
 
 '''logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:%S")
