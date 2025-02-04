@@ -41,7 +41,7 @@ class Sense(object):
             time.sleep(self.s_delay)
 
 class Interp(object):
-    def __init__(self, si_bus, ic_bus, s_delay, c_delay, sensitivity = [0, 3600], polarity = False, t= 60):
+    def __init__(self, s_delay, c_delay, sensitivity = [0, 3600], polarity = False, t= 60):
         self.polarity = polarity
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
@@ -123,7 +123,7 @@ class Interp(object):
                
 
 class Control(object):
-    def __init__(self, threshold, ic_bus, c_delay, kp = 30.0, ki = 0.0):
+    def __init__(self, threshold, c_delay, kp = 30.0, ki = 0.0):
         #self.px = Picarx()
         self.threshold = threshold
         self.kp = kp
