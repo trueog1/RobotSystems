@@ -15,7 +15,7 @@ class Sense(object):
     def __init__(self, si_bus, s_delay, camera = False):
         self.px = Picarx()
         self.reference = np.array(self.px.grayscale._reference)
-        self.si_bus = si_bus
+        #self.si_bus = si_bus
         self.s_delay = s_delay
 
         if camera == True:
@@ -29,15 +29,15 @@ class Sense(object):
     def read_gray_stat(self):
         return self.px.grayscale.read() 
 
-    def take_photo(self):
+    def take_photo(self, si_bus):
         while True:
             Vilib.take_photo(photo_name = self.image_name, path = self.path)
-            self.si_bus.write(f'{self.path}/{self.image_name}')  
+            si_bus.write(f'{self.path}/{self.image_name}')  
             time.sleep(self.s_delay) 
 
-    def set_bus_grayscale(self):
+    def set_bus_grayscale(self, si_bus):
         while True:
-            self.si_bus.write(self.read_gray_stat())
+            si_bus.write(self.read_gray_stat())
             time.sleep(self.s_delay)
 
 class Interp(object):
@@ -49,15 +49,15 @@ class Interp(object):
         self.color = 255
         self.img_start = 350
         self.img_cutoff = 425
-        self.si_bus = si_bus
+        #self.si_bus = si_bus
         self.s_delay = s_delay
-        self.ic_bus = ic_bus
+        #self.ic_bus = ic_bus
         self.c_delay = c_delay
 
-    def locating_line_g(self, gs_v):
+    def locating_line_g(self, gs_v, si_bus):
 
         while True:
-            gs_v = self.si_bus.read()
+            gs_v = si_bus.read()
 
             if self.polarity == True:
                 gs_v = [gs - min(gs_v) for gs in gs_v]
@@ -91,9 +91,9 @@ class Interp(object):
                     time.sleep(self.s_delay)
                     continue
 
-    def locating_line_c(self):
+    def locating_line_c(self, si_bus):
         while True:
-            file_n = self.si_bus.read()
+            file_n = si_bus.read()
             img = cv2.imread(f'{file_n}.jpg')
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = img[self.img_start:self.img_cutoff, :]
@@ -116,9 +116,9 @@ class Interp(object):
                 self.robot_position = (cX - half_width)/ half_width
                 time.sleep(self.s_delay)
 
-    def robot_location(self):
+    def robot_location(self, ic_bus):
         while True:
-            self.ic_bus.write(self.robot_position)
+            ic_bus.write(self.robot_position)
             time.sleep(self.c_delay)
                
 
@@ -130,12 +130,12 @@ class Control(object):
         self.ki = ki
         self.e = 0.0
         self.angle = 0.0
-        self.ic_bus = ic_bus
+        #self.ic_bus = ic_bus
         self.c_delay = c_delay
 
-    def auto_steering(self, position, px):
+    def auto_steering(self, position, px, ic_bus):
         while True:
-            position = self.ic_bus.read()
+            position = ic_bus.read()
             if abs(position) > self.threshold:
                 self.e = self.e + position
                 self.angle = (self.kp * position) + (self.ki * self.e)
@@ -175,9 +175,9 @@ if __name__ == "__main__":
         control_delay = 0.1
 
         if value == 'a':
-            sense = Sense(si_bus = sense_interp_bus, s_delay = sense_delay, camera = False)
-            think = Interp(si_bus = sense_interp_bus, ic_bus = interp_control_bus, s_delay = sense_delay, c_delay = control_delay,polarity = polarity)
-            act = Control(threshold= threshold, ic_bus = interp_control_bus, c_delay = control_delay)
+            sense = Sense(s_delay = sense_delay, camera = False)
+            think = Interp(s_delay = sense_delay, c_delay = control_delay,polarity = polarity)
+            act = Control(threshold= threshold, c_delay = control_delay)
             time.sleep(1)
             sense.px.forward(30)
             '''while True:
@@ -185,10 +185,10 @@ if __name__ == "__main__":
                 robot_position = think.robot_location()
                 act.auto_steering(robot_position, sense.px)'''
             with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-                eSensor = executor.submit(sense.set_bus_grayscale)
-                eInterpreter = executor.submit(think.locating_line_g)
-                eRobot = executor.submit(think.robot_position)
-                eControl = executor.submit(act.auto_steering)
+                eSensor = executor.submit(sense.set_bus_grayscale, sense_interp_bus)
+                eInterpreter = executor.submit(think.locating_line_g, sense_interp_bus)
+                eRobot = executor.submit(think.robot_position, interp_control_bus)
+                eControl = executor.submit(act.auto_steering, interp_control_bus)
 
         if value == 'b':
             img_t = input("Enter camera threshold value:")
