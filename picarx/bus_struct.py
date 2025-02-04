@@ -59,6 +59,7 @@ class Interp(object):
 
         while True:
             gs_v = si_bus.read()
+            print(f'Gray Transfer')
 
             if self.polarity == True:
                 gs_v = [gs - min(gs_v) for gs in gs_v]
@@ -179,7 +180,7 @@ if __name__ == "__main__":
 
         if value == 'a':
             sense = Sense(s_delay = sense_delay, camera = False)
-            think = Interp(s_delay = sense_delay, c_delay = control_delay,polarity = polarity)
+            think = Interp(s_delay = sense_delay, c_delay = control_delay, polarity = polarity)
             act = Control(threshold= threshold, c_delay = control_delay)
             time.sleep(1)
             sense.px.forward(30)
@@ -196,9 +197,9 @@ if __name__ == "__main__":
         if value == 'b':
             img_t = input("Enter camera threshold value:")
             img_t = float(img_t)
-            sense = Sense(si_bus = sense_interp_bus, s_delay = sense_delay, camera = True)
-            think = Interp(si_bus = sense_interp_bus, ic_bus = interp_control_bus, s_delay = sense_delay, c_delay = control_delay,polarity = polarity, t = img_t)
-            act = Control(threshold= threshold, ic_bus = interp_control_bus, c_delay = control_delay)
+            sense = Sense(s_delay = sense_delay, camera = True)
+            think = Interp(s_delay = sense_delay, c_delay = control_delay, polarity = polarity, t = img_t)
+            act = Control(threshold= threshold, c_delay = control_delay)
             time.sleep(1)
             sense.px.forward(30)
             '''while True:
@@ -209,7 +210,7 @@ if __name__ == "__main__":
                 act.auto_steering(robot_position, sense.px)'''
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-                eSensor = executor.submit(sense.take_photo)
-                eInterpreter = executor.submit(think.locating_line_c)
-                eRobot = executor.submit(think.robot_position)
-                eControl = executor.submit(act.auto_steering)
+                eSensor = executor.submit(sense.take_photo, sense_interp_bus)
+                eInterpreter = executor.submit(think.locating_line_c, sense_interp_bus)
+                eRobot = executor.submit(think.robot_position, interp_control_bus)
+                eControl = executor.submit(act.auto_steering, interp_control_bus)
