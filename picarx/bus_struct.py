@@ -12,7 +12,7 @@ logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:
 logging.getLogger().setLevel(logging.DEBUG)'''
 
 class Sense(object):
-    def __init__(self, si_bus, s_delay, camera = False):
+    def __init__(self, s_delay, camera = False):
         self.px = Picarx()
         self.reference = np.array(self.px.grayscale._reference)
         #self.si_bus = si_bus
