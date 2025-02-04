@@ -40,8 +40,9 @@ class Sense(object):
 
     def set_bus_grayscale(self, si_bus):
         while True:
-            si_bus.write(self.read_gray_stat())
-            print(f'Red grayscale value')
+            si_bus.write(self.px.grayscale.read() - self.reference)
+            #si_bus.write(self.read_gray_stat())
+            print(f'Read grayscale value')
             time.sleep(self.s_delay)
 
 class Interp(object):
@@ -61,9 +62,10 @@ class Interp(object):
     def locating_line_g(self, si_bus, ic_bus):
 
         while True:
+            #time.sleep(self.s_delay)
             gs_v = si_bus.read()
-            print(f'Gray Transfer')
             time.sleep(self.s_delay)
+            print(f'Gray Transfer')
 
             if self.polarity == True:
                 gs_v = [gs - min(gs_v) for gs in gs_v]
@@ -103,8 +105,9 @@ class Interp(object):
 
     def locating_line_c(self, si_bus, ic_bus):
         while True:
-            file_n = si_bus.read()
             time.sleep(self.s_delay)
+            file_n = si_bus.read()
+            #time.sleep(self.s_delay)
             img = cv2.imread(f'{file_n}.jpg')
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = img[self.img_start:self.img_cutoff, :]
