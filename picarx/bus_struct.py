@@ -66,7 +66,7 @@ class Interp(object):
             try:
                 gs_v = si_bus.read()
                 #print(gs_v)
-                time.sleep(self.s_delay)
+                #time.sleep(self.s_delay)
                 print(f'Gray Transfer')
 
                 if self.polarity == True:
@@ -88,14 +88,14 @@ class Interp(object):
                             print(f'Position:{robot_position}')
                                 #ic_bus.write(robot_position)
                                 #print(f'Changed Position: {ic_bus.read()}')
-                            time.sleep(self.s_delay)
+                            #time.sleep(self.s_delay)
                             
                         else:
                             robot_position = 1 - robot_position
                             print(f'Position:{robot_position}')
                             #ic_bus.write(robot_position)
                             #print(f'Changed Position: {ic_bus.read()}')
-                        time.sleep(self.s_delay)  
+                            #time.sleep(self.s_delay)  
                     
                     if left > right:
                         robot_position = (middle - left)/max(left, middle)
@@ -107,14 +107,14 @@ class Interp(object):
                             print(f'Position0:{robot_position}')
                                 #ic_bus.write(robot_position)
                                 #print(f'Changed Position: {ic_bus.read()}')
-                            time.sleep(self.s_delay)  
+                            #time.sleep(self.s_delay)  
 
                         else:
                             robot_position = robot_position - 1
                             print(f'Position1:{robot_position}')
                             #ic_bus.write(robot_position)
                             #print(f'Changed Position: {ic_bus.read()}')
-                        time.sleep(self.s_delay)   
+                            #time.sleep(self.s_delay)   
 
                     ic_bus.write(robot_position)
                     print(f'Changed Position: {ic_bus.read()}')
@@ -122,7 +122,7 @@ class Interp(object):
 
                 except:
                     print(f'Divide by zero error, continuing')
-                time.sleep(self.s_delay)
+                    time.sleep(self.s_delay)
 
             except:
                 time.sleep(self.s_delay)
