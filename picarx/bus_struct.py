@@ -40,7 +40,7 @@ class Sense(object):
 
     def set_bus_grayscale(self, si_bus):
         while True:
-            si_bus.write(self.px.grayscale.read() - np.array([100, 40, 20]))
+            si_bus.write(self.px.grayscale.read()) #- np.array([100, 40, 20])
             #si_bus.write(self.read_gray_stat())
             print(f'Read grayscale value')
             time.sleep(self.s_delay)
