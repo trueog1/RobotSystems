@@ -220,9 +220,9 @@ if __name__ == "__main__":
         sense_interp_bus = Bus()
         interp_control_bus = Bus()
 
-        sense_delay = 0.02
-        interp_delay = 0.1
-        control_delay = 0.5
+        sense_delay = 0.01
+        interp_delay = 0.02
+        control_delay = 0.1
 
         if value == 'a':
             sense = Sense(s_delay = sense_delay, camera = False)
