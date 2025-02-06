@@ -46,7 +46,7 @@ class Sense(object):
             time.sleep(self.s_delay)
 
 class Interp(object):
-    def __init__(self, s_delay, c_delay, sensitivity = [0, 3600], polarity = False, t= 60):
+    def __init__(self, delay, sensitivity = [0, 3600], polarity = False, t= 60):
         self.polarity = polarity
         self.low_sense, self.high_sense = sensitivity
         self.robot_position = 0
@@ -55,9 +55,9 @@ class Interp(object):
         self.img_start = 350
         self.img_cutoff = 425
         #self.si_bus = si_bus
-        self.s_delay = s_delay
+        self.s_delay = delay
         #self.ic_bus = ic_bus
-        self.c_delay = c_delay
+        self.c_delay = delay
         self.lock = rwlock.RWLockWrite()
 
     def locating_line_g(self, si_bus, ic_bus):
@@ -220,12 +220,13 @@ if __name__ == "__main__":
         sense_interp_bus = Bus()
         interp_control_bus = Bus()
 
-        sense_delay = 0.1
+        sense_delay = 0.02
+        interp_delay = 0.1
         control_delay = 0.5
 
         if value == 'a':
             sense = Sense(s_delay = sense_delay, camera = False)
-            think = Interp(s_delay = sense_delay, c_delay = control_delay, polarity = polarity)
+            think = Interp(delay = interp_delay, polarity = polarity)
             act = Control(threshold= threshold, c_delay = control_delay)
             time.sleep(1)
             sense.px.forward(35)
