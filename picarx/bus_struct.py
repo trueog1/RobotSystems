@@ -83,14 +83,14 @@ class Interp(object):
                         #print(robot_position)
                         
                         if robot_position < 0:
-                            with self.lock.gen_wlock():
-                                robot_position = -1 * robot_position
-                                print(f'Position:{robot_position}')
+                            #with self.lock.gen_wlock():
+                            robot_position = -1 * robot_position
+                            print(f'Position:{robot_position}')
                                 #ic_bus.write(robot_position)
                                 #print(f'Changed Position: {ic_bus.read()}')
                             time.sleep(self.s_delay)
                             
-                        with self.lock.gen_wlock():
+                        else:
                             robot_position = 1 - robot_position
                             print(f'Position:{robot_position}')
                             #ic_bus.write(robot_position)
@@ -102,14 +102,14 @@ class Interp(object):
                         #print(robot_position)
 
                         if robot_position < 0:
-                            with self.lock.gen_wlock():
-                                robot_position = robot_position
-                                print(f'Position0:{robot_position}')
+                            #with self.lock.gen_wlock():
+                            robot_position = robot_position
+                            print(f'Position0:{robot_position}')
                                 #ic_bus.write(robot_position)
                                 #print(f'Changed Position: {ic_bus.read()}')
                             time.sleep(self.s_delay)  
 
-                        with self.lock.gen_wlock():
+                        else:
                             robot_position = robot_position - 1
                             print(f'Position1:{robot_position}')
                             #ic_bus.write(robot_position)
