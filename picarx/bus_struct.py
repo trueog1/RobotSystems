@@ -221,14 +221,14 @@ if __name__ == "__main__":
         interp_control_bus = Bus()
 
         sense_delay = 0.1
-        control_delay = 0.1
+        control_delay = 0.5
 
         if value == 'a':
             sense = Sense(s_delay = sense_delay, camera = False)
             think = Interp(s_delay = sense_delay, c_delay = control_delay, polarity = polarity)
             act = Control(threshold= threshold, c_delay = control_delay)
             time.sleep(1)
-            sense.px.forward(55)
+            sense.px.forward(35)
             '''while True:
                 think.locating_line_g(sense.read_gray_stat())
                 robot_position = think.robot_location()
