@@ -40,7 +40,7 @@ class Sense(object):
 
     def set_bus_grayscale(self, si_bus):
         while True:
-            si_bus.write(self.px.grayscale.read())
+            si_bus.write(self.px.grayscale.read() - np.array([100, 40, 20]))
             #si_bus.write(self.read_gray_stat())
             print(f'Read grayscale value')
             time.sleep(self.s_delay)
@@ -58,13 +58,14 @@ class Interp(object):
         self.s_delay = s_delay
         #self.ic_bus = ic_bus
         self.c_delay = c_delay
+        self.lock = rwlock.RWLockWrite()
 
     def locating_line_g(self, si_bus, ic_bus):
 
         while True:
             try:
                 gs_v = si_bus.read()
-                print(gs_v)
+                #print(gs_v)
                 time.sleep(self.s_delay)
                 print(f'Gray Transfer')
 
@@ -73,36 +74,55 @@ class Interp(object):
                 else:
                     gs_v = [abs(gs - max(gs_v)) for gs in gs_v]
 
+                print(gs_v)
                 left, middle, right = gs_v
 
-                if right >= left:
-                    robot_position = (middle - right)/max(right, middle)
+                try:
+                    if right >= left:
+                        robot_position = (middle - right)/max(right, middle)
+                        #print(robot_position)
+                        
+                        if robot_position < 0:
+                            with self.lock.gen_wlock():
+                                robot_position = -1 * robot_position
+                                print(f'Position:{robot_position}')
+                                #ic_bus.write(robot_position)
+                                #print(f'Changed Position: {ic_bus.read()}')
+                            time.sleep(self.s_delay)
+                            
+                        with self.lock.gen_wlock():
+                            robot_position = 1 - robot_position
+                            print(f'Position:{robot_position}')
+                            #ic_bus.write(robot_position)
+                            #print(f'Changed Position: {ic_bus.read()}')
+                        time.sleep(self.s_delay)  
                     
-                    if robot_position < 0:
-                        robot_position = -1 * robot_position
-                        time.sleep(self.s_delay)
-                        continue
-                    else:
-                        robot_position = 1 - robot_position
-                        time.sleep(self.s_delay)
-                        continue
-                
-                elif left > right:
-                    robot_position = (middle - left)/max(left, middle)
+                    if left > right:
+                        robot_position = (middle - left)/max(left, middle)
+                        #print(robot_position)
 
-                    if robot_position < 0:
-                        robot_position = robot_position
-                        time.sleep(self.s_delay)
-                        continue
+                        if robot_position < 0:
+                            with self.lock.gen_wlock():
+                                robot_position = robot_position
+                                print(f'Position0:{robot_position}')
+                                #ic_bus.write(robot_position)
+                                #print(f'Changed Position: {ic_bus.read()}')
+                            time.sleep(self.s_delay)  
 
-                    else:
-                        robot_position = robot_position - 1
-                        time.sleep(self.s_delay)
-                        continue
+                        with self.lock.gen_wlock():
+                            robot_position = robot_position - 1
+                            print(f'Position1:{robot_position}')
+                            #ic_bus.write(robot_position)
+                            #print(f'Changed Position: {ic_bus.read()}')
+                        time.sleep(self.s_delay)   
 
-                ic_bus.write(self.robot_position)
-                print(f'Changed Position')
-                time.sleep(self.c_delay)
+                    ic_bus.write(robot_position)
+                    print(f'Changed Position: {ic_bus.read()}')
+                    time.sleep(self.c_delay)
+
+                except:
+                    print(f'Divide by zero error, continuing')
+                time.sleep(self.s_delay)
 
             except:
                 time.sleep(self.s_delay)
@@ -154,17 +174,18 @@ class Control(object):
         while True:
             try:
                 position = ic_bus.read()
-                time.sleep(self.c_delay)
+                print(position)
+                #time.sleep(self.c_delay)
                 if abs(position) > self.threshold:
                     self.e = self.e + position
                     self.angle = (self.kp * position) + (self.ki * self.e)
                     px.set_dir_servo_angle(self.angle)
                     time.sleep(self.c_delay)
                     print(f'Move')
-                    continue
 
             except:
-                time.sleep(self.c_delay)
+                print(f"No steering provided")
+            time.sleep(self.c_delay)
 
 class Bus(object):
     def __init__(self):
