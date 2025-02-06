@@ -228,7 +228,7 @@ if __name__ == "__main__":
             think = Interp(s_delay = sense_delay, c_delay = control_delay, polarity = polarity)
             act = Control(threshold= threshold, c_delay = control_delay)
             time.sleep(1)
-            sense.px.forward(30)
+            sense.px.forward(55)
             '''while True:
                 think.locating_line_g(sense.read_gray_stat())
                 robot_position = think.robot_location()
