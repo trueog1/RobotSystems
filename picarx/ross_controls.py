@@ -1,7 +1,10 @@
 from picarx_improved import Picarx
 import time
 #import logging
-from vilib import Vilib
+try:
+    from vilib import Vilib
+except:
+    pass
 import numpy as np
 import cv2 
 import rossros as ros
@@ -130,6 +133,7 @@ if __name__ == "__main__":
     control_delay = 0.1
     full_time = 15
     check_time = 0.01
+    print_delay = 0.25
 
     if value == 'a':
         sense = Sense(camera = False)
@@ -170,8 +174,17 @@ if __name__ == "__main__":
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
+    print_buses = ros.Printer((si_bus, ic_bus, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
+
     terminate_timer = ros.Timer(terminate_bus,full_time,check_time,terminate_bus,"Termination Timer")
 
-    producer_consumer_list = [read_grayscale, read_ultrasonic, find_position, determine_stop, steering, terminate_timer]
+    producer_consumer_list = [read_grayscale,
+                              find_position,
+                              steering,
+                              print_buses,
+                              terminate_timer,
+                              determine_stop,
+                              read_ultrasonic
+                              ]
     
     ros.runConcurrently(producer_consumer_list)
