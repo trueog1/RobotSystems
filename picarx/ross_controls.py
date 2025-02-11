@@ -14,8 +14,8 @@ logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:
 logging.getLogger().setLevel(logging.DEBUG)'''
 
 class Sense(object):
-    def __init__(self, camera = False):
-        self.px = Picarx()
+    def __init__(self, px, camera = False):
+        self.px = px
         self.reference = np.array(self.px.grayscale._reference)
         if camera == True:
             Vilib.camera_start()
@@ -100,8 +100,8 @@ class Interp(object):
                
 
 class Control(object):
-    def __init__(self, threshold, stop = 10, kp = 30.0, ki = 0.0):
-        #self.px = Picarx()
+    def __init__(self, px, threshold, stop = 10, kp = 30.0, ki = 0.0):
+        self.px = px
         self.threshold = threshold
         self.kp = kp
         self.ki = ki
@@ -109,7 +109,7 @@ class Control(object):
         self.angle = 0.0
         self.stop_distance = stop
 
-    def auto_steering(self, position, px):
+    def auto_steering(self, position):
         if abs(position) > self.threshold:
             self.e = self.e + position
             self.angle = (self.kp * position) + (self.ki * self.e)
@@ -122,7 +122,7 @@ class Control(object):
             return 0
 
 if __name__ == "__main__":
-    #px = Picarx()
+    px = Picarx()
     value = input("Enter line following type ('a': greyscale 'b': camera 'c': quit):")
     threshold = input("Enter threshold value:")
     threshold = float(threshold)
@@ -136,9 +136,9 @@ if __name__ == "__main__":
     print_delay = 0.25
 
     if value == 'a':
-        sense = Sense(camera = False)
+        sense = Sense(px = px, camera = False)
         think = Interp(polarity = polarity)
-        act = Control(threshold= threshold)
+        act = Control(px = px, threshold= threshold)
         '''while True:
             think.locating_line_g(sense.read_stat())
             robot_position = think.robot_location()
@@ -147,9 +147,9 @@ if __name__ == "__main__":
     if value == 'b':
         img_t = input("Enter camera threshold value:")
         img_t = float(img_t)
-        sense = Sense(camera = True)
+        sense = Sense(px = px, camera = True)
         think = Interp(polarity = polarity, t = img_t)
-        act = Control(threshold= threshold)
+        act = Control(px = px, threshold= threshold)
         '''while True:
             sense.take_photo()
             print(f'photo')
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
-    print_buses = ros.Printer((si_bus, ic_bus, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
+    print_buses = ros.Printer((si_bus, ic_bus, ic_bus_u, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
 
     terminate_timer = ros.Timer(terminate_bus,full_time,check_time,terminate_bus,"Termination Timer")
 
