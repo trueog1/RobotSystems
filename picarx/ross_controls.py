@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
-    print_buses = ros.Printer((si_bus, ic_bus, ic_bus_u, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
+    print_buses = ros.Printer((ultrasonic_bus, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
 
     terminate_timer = ros.Timer(terminate_bus,full_time,check_time,terminate_bus,"Termination Timer")
 
