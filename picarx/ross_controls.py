@@ -176,7 +176,7 @@ if __name__ == "__main__":
 
     find_position = ros.ConsumerProducer(think.locating_line_g, si_bus, ic_bus, interp_delay, terminate_bus, "Calculate distance from line")
 
-    stop_distance = ros.ConsumerProducer(think.ultrasonic(sense.get_ultrasonic()), ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Find stop distance")
+    stop_distance = ros.ConsumerProducer(think.ultrasonic, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Find stop distance")
 
     determine_stop = ros.Consumer(act.ultrasonic_stop, ic_bus_u, interp_delay, terminate_bus, "Calculate distance")
 
