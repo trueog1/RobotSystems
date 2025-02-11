@@ -119,8 +119,8 @@ class Control(object):
         
     def ultrasonic_stop(self, distance):
             if distance < self.stop_distance:
-                return 1
-            return 0
+                self.px.stop()
+            
 
 if __name__ == "__main__":
     px = Picarx()
@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
     find_position = ros.ConsumerProducer(think.locating_line_g, si_bus, ic_bus, interp_delay, terminate_bus, "Calculate distance from line")
 
-    determine_stop = ros.ConsumerProducer(act.ultrasonic_stop, ultrasonic_bus, terminate_bus, interp_delay, terminate_bus, "Calculate distance")
+    determine_stop = ros.ConsumerProducer(act.ultrasonic_stop, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Calculate distance")
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
