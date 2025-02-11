@@ -162,6 +162,7 @@ if __name__ == "__main__":
     si_bus = ros.Bus(sense.read_gray_stat(), "Grayscale Value")
     ic_bus = ros.Bus(think.locating_line_g(sense.read_gray_stat()), "Position Calcs")
     ultrasonic_bus = ros.Bus(sense.get_ultrasonic(), "Ultrasonic Bus")
+    ic_bus_u = ros.Bus(act.ultrasonic_stop(sense.get_ultrasonic()), "Ultrasonic Data")
     terminate_bus = ros.Bus(0, "Termination Bus")
 
     read_grayscale = ros.Producer(sense.read_gray_stat,si_bus,sense_delay,terminate_bus,"Read Grayscale values")
@@ -170,7 +171,7 @@ if __name__ == "__main__":
 
     find_position = ros.ConsumerProducer(think.locating_line_g, si_bus, ic_bus, interp_delay, terminate_bus, "Calculate distance from line")
 
-    determine_stop = ros.ConsumerProducer(act.ultrasonic_stop, ultrasonic_bus, terminate_bus, interp_delay, "Calculate distance")
+    determine_stop = ros.ConsumerProducer(act.ultrasonic_stop, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Calculate distance")
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
