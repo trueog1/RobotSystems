@@ -118,10 +118,12 @@ class Control(object):
             return self.angle
         
     def ultrasonic_stop(self, distance):
-            if distance < self.stop_distance:
-                self.px.stop()
-            '''else:
-                self.px.forward(35)'''
+        if distance < self.stop_distance:
+            self.px.stop()
+            return 1
+        else:
+            self.px.forward(35)
+            return 0
             
 
 if __name__ == "__main__":
