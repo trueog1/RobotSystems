@@ -7,7 +7,7 @@ except:
     pass
 import numpy as np
 import cv2 
-import rossros as ros
+import picarx.rossros as ros
 
 '''logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:%S")
@@ -100,7 +100,7 @@ class Interp(object):
                
 
 class Control(object):
-    def __init__(self, threshold, stop = 15, kp = 30.0, ki = 0.0):
+    def __init__(self, threshold, stop = 10, kp = 30.0, ki = 0.0):
         #self.px = Picarx()
         self.threshold = threshold
         self.kp = kp
