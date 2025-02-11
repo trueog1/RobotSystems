@@ -98,6 +98,9 @@ class Interp(object):
 
     def robot_location(self):
         return self.robot_position
+    
+    def ultrasonic(self, distance_value):
+        return distance_value
                
 
 class Control(object):
@@ -120,10 +123,7 @@ class Control(object):
     def ultrasonic_stop(self, distance):
         if distance < self.stop_distance:
             self.px.stop()
-            return 1
-        else:
-            self.px.forward(35)
-            return 0
+            
             
 
 if __name__ == "__main__":
@@ -176,7 +176,9 @@ if __name__ == "__main__":
 
     find_position = ros.ConsumerProducer(think.locating_line_g, si_bus, ic_bus, interp_delay, terminate_bus, "Calculate distance from line")
 
-    determine_stop = ros.ConsumerProducer(act.ultrasonic_stop, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Calculate distance")
+    stop_distance = ros.ConsumerProducer(think.ultrasonic(sense.get_ultrasonic()), ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Find stop distance")
+
+    determine_stop = ros.Consumer(act.ultrasonic_stop, ic_bus_u, interp_delay, terminate_bus, "Calculate distance")
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
@@ -190,7 +192,8 @@ if __name__ == "__main__":
                               print_buses,
                               terminate_timer,
                               determine_stop,
-                              read_ultrasonic
+                              read_ultrasonic, 
+                              stop_distance
                               ]
     
     ros.runConcurrently(producer_consumer_list)
