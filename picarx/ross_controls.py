@@ -100,7 +100,10 @@ class Interp(object):
         return self.robot_position
     
     def ultrasonic(self, distance_value):
-        return distance_value
+        self.d_value = distance_value
+        if self.d_value == -2:
+            self.d_value = 10
+        return self.d_value
                
 
 class Control(object):
@@ -176,13 +179,13 @@ if __name__ == "__main__":
 
     find_position = ros.ConsumerProducer(think.locating_line_g, si_bus, ic_bus, interp_delay, terminate_bus, "Calculate distance from line")
 
-    #stop_distance = ros.ConsumerProducer(think.ultrasonic, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Find stop distance")
+    stop_distance = ros.ConsumerProducer(think.ultrasonic, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Find stop distance")
 
     determine_stop = ros.Consumer(act.ultrasonic_stop, ultrasonic_bus, interp_delay, terminate_bus, "Calculate distance")
 
     steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
 
-    print_buses = ros.Printer((ultrasonic_bus, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
+    print_buses = ros.Printer((ultrasonic_bus, ic_bus_u, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
 
     terminate_timer = ros.Timer(terminate_bus,full_time,check_time,terminate_bus,"Termination Timer")
 
