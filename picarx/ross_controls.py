@@ -7,7 +7,7 @@ except:
     pass
 import numpy as np
 import cv2 
-import picarx.rossros as ros
+import rossros as ros
 
 '''logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level = logging.INFO, datefmt="%H:%M:%S")
