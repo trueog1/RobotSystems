@@ -97,13 +97,14 @@ class Interp(object):
                
 
 class Control(object):
-    def __init__(self, threshold, kp = 30.0, ki = 0.0):
+    def __init__(self, threshold, stop = 15, kp = 30.0, ki = 0.0):
         #self.px = Picarx()
         self.threshold = threshold
         self.kp = kp
         self.ki = ki
         self.e = 0.0
         self.angle = 0.0
+        self.stop_distance = stop
 
     def auto_steering(self, position, px):
         if abs(position) > self.threshold:
@@ -111,6 +112,11 @@ class Control(object):
             self.angle = (self.kp * position) + (self.ki * self.e)
             px.set_dir_servo_angle(self.angle)
             return self.angle
+        
+    def ultrasonic_stop(self, distance):
+            if distance < self.stop_distance:
+                return 1
+            return 0
 
 if __name__ == "__main__":
     #px = Picarx()
@@ -122,21 +128,17 @@ if __name__ == "__main__":
     sense_delay = 0.01
     interp_delay = 0.02
     control_delay = 0.1
+    full_time = 15
+    check_time = 0.01
 
     if value == 'a':
         sense = Sense(camera = False)
         think = Interp(polarity = polarity)
         act = Control(threshold= threshold)
-        time.sleep(1)
-        sense.px.forward(35)
-        si_bus = ros.Bus(sense.read_gray_stat(), "Grayscale Value")
-        ic_bus = ros.Bus(think.locating_line_g(sense.read_gray_stat()), "Position Calcs")
-        ultrasonic_bus = ros.Bus(sense.get_ultrasonic(), "Ultrasonic Bus")
-        terminate_bus = ros.Bus(0, "Termination Bus")
-        while True:
+        '''while True:
             think.locating_line_g(sense.read_stat())
             robot_position = think.robot_location()
-            act.auto_steering(robot_position, sense.px)
+            act.auto_steering(robot_position, sense.px)'''
 
     if value == 'b':
         img_t = input("Enter camera threshold value:")
@@ -144,11 +146,32 @@ if __name__ == "__main__":
         sense = Sense(camera = True)
         think = Interp(polarity = polarity, t = img_t)
         act = Control(threshold= threshold)
-        time.sleep(1)
-        sense.px.forward(30)
-        while True:
+        '''while True:
             sense.take_photo()
             print(f'photo')
             think.line_locating_c(sense.image_name, sense.path)
             robot_position = think.robot_location()
-            act.auto_steering(robot_position, sense.px)
+            act.auto_steering(robot_position, sense.px)'''
+        
+    time.sleep(1)
+    sense.px.forward(35)
+    si_bus = ros.Bus(sense.read_gray_stat(), "Grayscale Value")
+    ic_bus = ros.Bus(think.locating_line_g(sense.read_gray_stat()), "Position Calcs")
+    ultrasonic_bus = ros.Bus(sense.get_ultrasonic(), "Ultrasonic Bus")
+    terminate_bus = ros.Bus(0, "Termination Bus")
+
+    read_grayscale = ros.Producer(sense.read_gray_stat,si_bus,sense_delay,terminate_bus,"Read Grayscale values")
+
+    read_ultrasonic = ros.Producer(sense.get_ultrasonic,ultrasonic_bus,sense_delay,terminate_bus,"Read Ultrasonic values")
+
+    find_position = ros.ConsumerProducer(think.locating_line_g, si_bus, ic_bus, interp_delay, terminate_bus, "Calculate distance from line")
+
+    determine_stop = ros.ConsumerProducer(act.ultrasonic_stop, ultrasonic_bus, terminate_bus, interp_delay, "Calculate distance")
+
+    steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
+
+    terminate_timer = ros.Timer(terminate_bus,full_time,check_time,terminate_bus,"Termination Timer")
+
+    producer_consumer_list = [read_grayscale, read_ultrasonic, find_position, determine_stop, steering, terminate_timer]
+    
+    ros.runConcurrently(producer_consumer_list)
