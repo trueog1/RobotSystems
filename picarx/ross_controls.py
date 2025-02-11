@@ -120,6 +120,9 @@ class Control(object):
     def ultrasonic_stop(self, distance):
             if distance < self.stop_distance:
                 self.px.stop()
+
+            else:
+                self.px.forward(35)
             
 
 if __name__ == "__main__":
