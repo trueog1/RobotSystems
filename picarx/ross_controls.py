@@ -192,8 +192,7 @@ if __name__ == "__main__":
                               print_buses,
                               terminate_timer,
                               determine_stop,
-                              read_ultrasonic, 
-                              stop_distance
+                              read_ultrasonic
                               ]
     
     ros.runConcurrently(producer_consumer_list)
