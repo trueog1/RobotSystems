@@ -58,20 +58,21 @@ class Interp(object):
             
             if self.robot_position < 0:
                 self.robot_position = -1 * self.robot_position
-                return
+                return self.robot_position
             else:
                 self.robot_position = 1 - self.robot_position
-                return
+                return self.robot_position
         
         elif left > right:
             self.robot_position = (middle - left)/max(left, middle)
 
             if self.robot_position < 0:
                 self.robot_position = self.robot_position
+                return self.robot_position
 
             else:
                 self.robot_position = self.robot_position - 1
-                return
+                return self.robot_position
 
     def line_locating_c(self, image_name, path):
         img = cv2.imread(f'{path}/{image_name}.jpg')
@@ -113,7 +114,7 @@ class Control(object):
         if abs(position) > self.threshold:
             self.e = self.e + position
             self.angle = (self.kp * position) + (self.ki * self.e)
-            px.set_dir_servo_angle(self.angle)
+            self.px.set_dir_servo_angle(self.angle)
             return self.angle
         
     def ultrasonic_stop(self, distance):
