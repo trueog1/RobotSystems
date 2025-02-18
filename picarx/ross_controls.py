@@ -174,7 +174,7 @@ if __name__ == "__main__":
     si_bus = ros.Bus(sense.read_gray_stat(), "Grayscale Value")
     ic_bus = ros.Bus(think.locating_line_g(sense.read_gray_stat()), "Position Calcs")
     ultrasonic_bus = ros.Bus(sense.get_ultrasonic(), "Ultrasonic Bus")
-    ic_bus_u = ros.Bus(act.ultrasonic_stop(sense.get_ultrasonic()), "Ultrasonic Data")
+    ic_bus_u = ros.Bus(think.ultrasonic(sense.get_ultrasonic()), "Ultrasonic Data")
     terminate_bus = ros.Bus(0, "Termination Bus")
 
     read_grayscale = ros.Producer(sense.read_gray_stat,si_bus,sense_delay,terminate_bus,"Read Grayscale values")
@@ -198,9 +198,9 @@ if __name__ == "__main__":
                               steering,
                               print_buses,
                               terminate_timer,
-                              determine_stop,
                               read_ultrasonic,
                               stop_distance
                               ]
+                              # determine_stop
     
     ros.runConcurrently(producer_consumer_list)
