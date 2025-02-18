@@ -102,7 +102,7 @@ class Interp(object):
     def ultrasonic(self, distance_value):
         self.d_value = distance_value
         if self.d_value == -2:
-            self.d_value = 10
+            self.d_value = 15
         return self.d_value
                
 
