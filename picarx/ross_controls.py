@@ -116,16 +116,20 @@ class Control(object):
         self.angle = 0.0
         self.stop_distance = stop
 
-    def auto_steering(self, position):
-        if abs(position) > self.threshold:
-            self.e = self.e + position
-            self.angle = (self.kp * position) + (self.ki * self.e)
-            self.px.set_dir_servo_angle(self.angle)
-            return self.angle
-        
-    def ultrasonic_stop(self, distance):
+    def auto_steering(self, position, distance):
         if distance < self.stop_distance:
             self.px.stop()
+
+        else:
+            if abs(position) > self.threshold:
+                self.e = self.e + position
+                self.angle = (self.kp * position) + (self.ki * self.e)
+                self.px.set_dir_servo_angle(self.angle)
+                return self.angle
+        
+    '''def ultrasonic_stop(self, distance):
+        if distance < self.stop_distance:
+            self.px.stop()'''
             
             
 
@@ -181,9 +185,9 @@ if __name__ == "__main__":
 
     stop_distance = ros.ConsumerProducer(think.ultrasonic, ultrasonic_bus, ic_bus_u, interp_delay, terminate_bus, "Find stop distance")
 
-    determine_stop = ros.Consumer(act.ultrasonic_stop, ultrasonic_bus, interp_delay, terminate_bus, "Calculate distance")
+    #determine_stop = ros.Consumer(act.ultrasonic_stop, ultrasonic_bus, interp_delay, terminate_bus, "Calculate distance")
 
-    steering = ros.Consumer(act.auto_steering, ic_bus, control_delay, terminate_bus, "Lets ride")
+    steering = ros.Consumer(act.auto_steering, (ic_bus, ic_bus_u), control_delay, terminate_bus, "Lets ride")
 
     print_buses = ros.Printer((ultrasonic_bus, ic_bus_u, terminate_bus),print_delay,terminate_bus,"Print raw data","Data bus readings are: ")
 
