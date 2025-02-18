@@ -101,8 +101,8 @@ class Interp(object):
     
     def ultrasonic(self, distance_value):
         self.d_value = distance_value
-        if self.d_value == -2:
-            self.d_value = 15
+        if self.d_value == -1 or -2:
+            self.d_value = 20
         return self.d_value
                
 
@@ -125,6 +125,7 @@ class Control(object):
                 self.e = self.e + position
                 self.angle = (self.kp * position) + (self.ki * self.e)
                 self.px.set_dir_servo_angle(self.angle)
+                self.px.forward(35)
                 return self.angle
         
     '''def ultrasonic_stop(self, distance):
